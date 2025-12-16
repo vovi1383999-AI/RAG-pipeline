@@ -104,7 +104,7 @@ if prompt := st.chat_input("Bạn muốn hỏi gì về quy định công ty?"):
                 """
 
                 # BƯỚC 4: Gửi cho Gemini trả lời
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                model = genai.GenerativeModel('gemini-2.5-flash')
                 response = model.generate_content(final_prompt)
                 
                 full_response = response.text
