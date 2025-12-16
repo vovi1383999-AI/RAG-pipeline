@@ -1,4 +1,35 @@
 import streamlit as st
+
+# 1. Khởi tạo session state để lưu lịch sử chat nếu chưa có
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# 2. Hiển thị lịch sử cũ (không tốn quota)
+for message in st.session_state.chat_history:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# 3. Chỉ gọi API khi người dùng thực sự nhập liệu mới
+if prompt := st.chat_input("Nhập câu hỏi của bạn..."):
+    # Hiển thị câu hỏi người dùng
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    st.session_state.chat_history.append({"role": "user", "content": prompt})
+
+    # Gọi API (Lúc này mới tốn 1 quota)
+    try:
+        response = model.generate_content(prompt)
+        bot_reply = response.text
+        
+        # Hiển thị và lưu câu trả lời
+        with st.chat_message("assistant"):
+            st.markdown(bot_reply)
+        st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
+        
+    except Exception as e:
+        st.error(f"Hết lượt dùng: {e}")
+
+
 import google.generativeai as genai
 from pinecone import Pinecone
 
